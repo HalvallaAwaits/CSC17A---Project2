@@ -11,8 +11,6 @@
  * Inheritance - done (Computer class inherits Player class)
  * Polymorphism - done (many functions accept 2 players
  *                      even if p2 is a derived computer class)
- * Virtual Function
- * Abstract Class
  * Templates - done (sttngs function works with both player or computer classes)
  * Attempt Exception?
  */
