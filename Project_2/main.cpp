@@ -5,14 +5,16 @@
 */
 
 /* Things to Add/Modify!
- * Class - done
- * Copy Constructor - done
- * Operator Overloading - done
- * Inheritance - done
- * Polymorphism
+ * Class - done (player and computer classes)
+ * Copy Constructor - done (copies one player into a new one)
+ * Operator Overloading - done (= operator for copying player information)
+ * Inheritance - done (Computer class inherits Player class)
+ * Polymorphism - done (many functions accept 2 players
+ *                      even if p2 is a derived computer class)
  * Virtual Function
  * Abstract Class
- * Templates - done
+ * Templates - done (sttngs function works with both player or computer classes)
+ * Attempt Exception?
  */
 
 //Libraries
@@ -30,17 +32,17 @@ using namespace std;
 //No Globals
 
 //Function Prototypes
-//void gameBoard(Player,Computer,char [],int);
+void gameBoard(Player &,Player &,char [],int);
 char plyrTrn(int &);
-//char gtSpc(Player,Computer,char [],int, int);
 int advAI(char []);
+int exprtAI(char []);
+char gtSpc(Player &,Player &,char [],int,int);
 void mrkSpc(char [],char,char,int &);
 int gmOvr(char [],int &);
-//void rslt(Player &,Computer &,int,int,int &);
-//void rcrdScr(Player,Computer,int,int);
+void rslt(Player &,Player &,int,int,int &);
+void rcrdScr(Player &,Player &,int,int);
 
-
-//Template Functions
+//Template Functions created to handle if player 2 is player or computer class 
 template <class T>
 void sttngs(int numP, Player &p1, T &p2){  
     //sets default name for p1 if none in file
@@ -56,7 +58,7 @@ void sttngs(int numP, Player &p1, T &p2){
     p1.setName(p1Name);
     
     //sets default name for p2 if none in file
-    if(numP==3){
+    if(numP==4){
         string p2Name="Bob";
         p2.setName(p2Name); 
         inputFile>>p2Name;
@@ -65,118 +67,6 @@ void sttngs(int numP, Player &p1, T &p2){
     
     //close inputfile
     inputFile.close();
-}
-
-template <class T2>
-void gameBoard(Player p1,T2 p2,char a[],int g){
-    //draws the game board
-    system("CLS");
-    cout<<"Game "<<g<<endl;
-    cout<<"\n"<<p1.getName()<<" is X's and "<<p2.getName()<<" is O's."<<endl<<endl;
-    cout<<"     ___ ___ ___ "<<endl;
-    cout<<"    |   |   |   |"<<endl;
-    cout<<"    | "<<a[7]<<" | "<<a[8]<<" | "<<a[9]<<" |"<<endl;
-    cout<<"    |___|___|___|"<<endl;
-    cout<<"    |   |   |   |"<<endl;
-    cout<<"    | "<<a[4]<<" | "<<a[5]<<" | "<<a[6]<<" |"<<endl;
-    cout<<"    |___|___|___|"<<endl;
-    cout<<"    |   |   |   |"<<endl;
-    cout<<"    | "<<a[1]<<" | "<<a[2]<<" | "<<a[3]<<" |"<<endl;
-    cout<<"    |___|___|___|"<<endl<<endl;
-}
-
-template <class T3>
-char gtSpc(Player p1,T3 p2,char a[],int p,int numP){
-    //get player's selection for space
-    string space; //holds space typed by player
-    char sp; //holds actual char value of first digit in string
-    int aisp; //holds random# generated for easy ai selection
-    do{
-        //select space if player 1's turn
-        if(p==1){
-            cout<<p1.getName()<<", make your selection by typing the space number: ";
-            cin>>space;
-            //truncates the string and takes only the first character in the string
-            sp=space[0];
-        }
-        //select space for player 2's turn
-        else{
-            //if player 2 is Easy AI
-            if(numP==1){
-                aisp=rand()%9+1;
-                sp='0'+aisp;
-            }
-            //if player 2 is Advanced AI
-            if(numP==2){
-                sp='0'+advAI(a);
-            }
-            //if player 2 is a second user
-            if(numP==3){
-                cout<<p2.getName()<<", make your selection by typing the space number: ";
-                cin>>space;
-                //truncates the string and takes only the first character in the string
-                sp=space[0];
-            }
-        }
-        if(sp!='1'&&sp!='2'&&sp!='3'&&sp!='4'&&
-            sp!='5'&&sp!='6'&&sp!='7'&&sp!='8'&&sp!='9')
-            cout<<"Invalid selection!"<<endl;
-    }while(sp!='1'&&sp!='2'&&sp!='3'&&sp!='4'&&
-            sp!='5'&&sp!='6'&&sp!='7'&&sp!='8'&&sp!='9');
-    return sp;
-}
-
-template <class T4>
-void rslt(Player &p1,T4 &p2,int s,int p,int &d){
-    //Show end results of game
-    if (s==1){
-       if(p%2==1){
-           cout<<p1.getName()<<" is the winner! Good job!"<<endl;
-           p1.incWins();
-           p2.incLosses();
-       }
-       if(p%2==0){
-           cout<<p2.getName()<<" is the winner! Good job!"<<endl;
-           p1.incLosses();
-           p2.incWins();
-       }
-    }
-    if (s==2){
-        cout<<"The game has ended in a draw!"<<endl;
-        d++;
-    }
-}
-
-template <class T5>
-void rcrdScr(Player p1,T5 p2,int g,int d){
-    //outputs final overall stats and stores them in a file designated by the user
-    string rsltFl; //file name to store results to file
-
-    //get file name for output file
-    cout<<endl;
-    cout<<"Please specify a filename that you would like"<<endl
-        <<"to output the results to (ex:'results.txt'): ";
-    cin>>rsltFl;
-
-    //declare the outfile and open
-    ofstream outputFile;
-    outputFile.open(rsltFl.c_str());
-
-    //final results output to screen
-    cout<<endl<<"You can find the file "<<rsltFl<<" within"<<endl
-        <<"the program folder."<<endl<<endl;   
-    cout<<"Games Played = "<<(g-1)<<" Draws = "<<d<<endl;
-    cout<<p1.getName()<<"'s score: "<<endl<<p1.getWins()<<"W "<<p1.getLosses()<<"L"<<endl;
-    cout<<p2.getName()<<"'s score: "<<endl<<p2.getWins()<<"W "<<p2.getLosses()<<"L"<<endl;
-
-    //output results to file
-    outputFile<<"Games Played = "<<(g-1)<<" Draws = "<<d<<endl;
-    outputFile<<p1.getName()<<"'s score: "<<endl<<p1.getWins()<<"W "<<p1.getLosses()<<"L"<<endl;
-    outputFile<<p2.getName()<<"'s score: "<<endl<<p2.getWins()<<"W "<<p2.getLosses()<<"L"<<endl;
-
-    //close file
-    outputFile.close();
-    
 }
 
 //Begin Execution Here
@@ -196,7 +86,7 @@ int main(int argc, char *argv[])
     srand(static_cast<unsigned int>(time(0)));//seed random number generator
     
     do{
-        system("CLS");
+        //system("CLS");
         //Introduce game
         cout<<"***********************************************************************"<<endl;
         cout<<"* ______ ______ ______   ______    _    ______   ______ ______ ______ *"<<endl;
@@ -216,12 +106,13 @@ int main(int argc, char *argv[])
         //prompt for number of players or AI opponent selection
         cout<<"Enter 1 for Easy AI opponent"<<endl;
         cout<<"Enter 2 for Advanced AI opponent"<<endl;
-        cout<<"Enter 3 for 2 players!"<<endl;
+        cout<<"Enter 3 for Expert AI opponent"<<endl;
+        cout<<"Enter 4 for 2 players!"<<endl;
         cin>>numPlyr;
-    }while(numPlyr<1||numPlyr>3);//check proper input for selection
+    }while(numPlyr<1||numPlyr>4);//check proper input for selection
     
     //play based on number of players selection
-    if(numPlyr==1||2){
+    if(numPlyr==1||2||3){
         Player p1;
         Computer p2(numPlyr);
         sttngs(numPlyr, p1, p2);
@@ -269,12 +160,11 @@ int main(int argc, char *argv[])
         gmNum++; //adds to game# each time played    
         //runs again if yes    
         }while (choice=='y'||choice=='Y');
-
+        
         //records the score by outputting to file
         rcrdScr(p1,p2,gmNum,draws);
-    
     }
-    else if(numPlyr==3){
+    else if(numPlyr==4){
         Player p1;
         Player p2;
         sttngs(numPlyr, p1, p2);
@@ -327,9 +217,26 @@ int main(int argc, char *argv[])
         rcrdScr(p1,p2,gmNum,draws);
     }
     
-    system("PAUSE");
+    //system("PAUSE");
     return EXIT_SUCCESS;
 }//End of Main
+
+void gameBoard(Player &p1,Player &p2,char a[],int g){
+    //draws the game board
+    //system("CLS");
+    cout<<"Game "<<g<<endl;
+    cout<<"\n"<<p1.getName()<<" is X's and "<<p2.getName()<<" is O's."<<endl<<endl;
+    cout<<"     ___ ___ ___ "<<endl;
+    cout<<"    |   |   |   |"<<endl;
+    cout<<"    | "<<a[7]<<" | "<<a[8]<<" | "<<a[9]<<" |"<<endl;
+    cout<<"    |___|___|___|"<<endl;
+    cout<<"    |   |   |   |"<<endl;
+    cout<<"    | "<<a[4]<<" | "<<a[5]<<" | "<<a[6]<<" |"<<endl;
+    cout<<"    |___|___|___|"<<endl;
+    cout<<"    |   |   |   |"<<endl;
+    cout<<"    | "<<a[1]<<" | "<<a[2]<<" | "<<a[3]<<" |"<<endl;
+    cout<<"    |___|___|___|"<<endl<<endl;
+}
 
 //determines if the  game is over
 int gmOvr(char a[],int &p){
@@ -364,6 +271,51 @@ int gmOvr(char a[],int &p){
     return s;
 }
 
+char gtSpc(Player &p1,Player &p2,char a[],int p,int numP){
+    //get player's selection for space
+    string space; //holds space typed by player
+    char sp; //holds actual char value of first digit in string
+    int aisp; //holds random# generated for easy ai selection
+    do{
+        //select space if player 1's turn
+        if(p==1){
+            cout<<p1.getName()<<", make your selection by typing the space number: ";
+            cin>>space;
+            //truncates the string and takes only the first character in the string
+            sp=space[0];
+        }
+        //select space for player 2's turn
+        else{
+            //if player 2 is Easy AI
+            if(numP==1){
+                aisp=rand()%9+1;
+                sp='0'+aisp;
+            }
+            //if player 2 is Advanced AI
+            if(numP==2){
+                sp='0'+advAI(a);
+            }
+            //if player 2 is Expert AI
+            if(numP==3){
+                sp='0'+exprtAI(a);
+            }
+            
+            //if player 2 is a second user
+            if(numP==4){
+                cout<<p2.getName()<<", make your selection by typing the space number: ";
+                cin>>space;
+                //truncates the string and takes only the first character in the string
+                sp=space[0];
+            }
+        }
+        if(sp!='1'&&sp!='2'&&sp!='3'&&sp!='4'&&
+            sp!='5'&&sp!='6'&&sp!='7'&&sp!='8'&&sp!='9')
+            cout<<"Invalid selection!"<<endl;
+    }while(sp!='1'&&sp!='2'&&sp!='3'&&sp!='4'&&
+            sp!='5'&&sp!='6'&&sp!='7'&&sp!='8'&&sp!='9');
+    return sp;
+}
+
 //marks the space the player selects
 void mrkSpc(char a[],char sp,char mrk,int &p){
      if (sp=='1'&&a[1]=='1')
@@ -391,79 +343,210 @@ void mrkSpc(char a[],char sp,char mrk,int &p){
 
 //Advanced AI board selection
 int advAI(char a[]){
-     //Checks for 2 horizontal and chooses remaining to win
-     if(a[1]=='O'&&a[2]=='O'&&a[3]=='3')return 3;
-     if(a[1]=='O'&&a[3]=='O'&&a[2]=='2')return 2;
-     if(a[2]=='O'&&a[3]=='O'&&a[1]=='1')return 1;
-     
-     if(a[4]=='O'&&a[5]=='O'&&a[6]=='6')return 6;
-     if(a[4]=='O'&&a[6]=='O'&&a[5]=='5')return 5;
-     if(a[5]=='O'&&a[6]=='O'&&a[4]=='4')return 4;
-     
-     if(a[7]=='O'&&a[8]=='O'&&a[9]=='9')return 9;
-     if(a[7]=='O'&&a[9]=='O'&&a[8]=='8')return 8;
-     if(a[8]=='O'&&a[9]=='O'&&a[7]=='7')return 7;
-     
-     //Checks for 2 vertical and chooses remaining to win
-     if(a[1]=='O'&&a[4]=='O'&&a[7]=='7')return 7;
-     if(a[1]=='O'&&a[7]=='O'&&a[4]=='4')return 4;
-     if(a[4]=='O'&&a[7]=='O'&&a[1]=='1')return 1;
-     
-     if(a[2]=='O'&&a[5]=='O'&&a[8]=='8')return 8;
-     if(a[2]=='O'&&a[8]=='O'&&a[5]=='5')return 5;
-     if(a[5]=='O'&&a[8]=='O'&&a[2]=='2')return 2;
-     
-     if(a[3]=='O'&&a[6]=='O'&&a[9]=='9')return 9;
-     if(a[3]=='O'&&a[9]=='O'&&a[6]=='6')return 6;
-     if(a[6]=='O'&&a[9]=='O'&&a[3]=='3')return 3;
-     
-     //Checks for 2 diagonal to win
-     if(a[1]=='O'&&a[5]=='O'&&a[9]=='9')return 9;
-     if(a[1]=='O'&&a[9]=='O'&&a[5]=='5')return 5;
-     if(a[5]=='O'&&a[9]=='O'&&a[1]=='1')return 1;
-     
-     if(a[3]=='O'&&a[5]=='O'&&a[7]=='7')return 7;
-     if(a[3]=='O'&&a[7]=='O'&&a[5]=='5')return 5;
-     if(a[5]=='O'&&a[7]=='O'&&a[3]=='3')return 3;
-     
-     //Checks for 2 horizontal spots held by player and chooses remaining
-     if(a[1]=='X'&&a[2]=='X'&&a[3]=='3')return 3;
-     if(a[1]=='X'&&a[3]=='X'&&a[2]=='2')return 2;
-     if(a[2]=='X'&&a[3]=='X'&&a[1]=='1')return 1;
-     
-     if(a[4]=='X'&&a[5]=='X'&&a[6]=='6')return 6;
-     if(a[4]=='X'&&a[6]=='X'&&a[5]=='5')return 5;
-     if(a[5]=='X'&&a[6]=='X'&&a[4]=='4')return 4;
-     
-     if(a[7]=='X'&&a[8]=='X'&&a[9]=='9')return 9;
-     if(a[7]=='X'&&a[9]=='X'&&a[8]=='8')return 8;
-     if(a[8]=='X'&&a[9]=='X'&&a[7]=='7')return 7;
-     
-     //Checks for 2 vertical spots held by player and chooses remaining
-     if(a[1]=='X'&&a[4]=='X'&&a[7]=='7')return 7;
-     if(a[1]=='X'&&a[7]=='X'&&a[4]=='4')return 4;
-     if(a[4]=='X'&&a[7]=='X'&&a[1]=='1')return 1;
-     
-     if(a[2]=='X'&&a[5]=='X'&&a[8]=='8')return 8;
-     if(a[2]=='X'&&a[8]=='X'&&a[5]=='5')return 5;
-     if(a[5]=='X'&&a[8]=='X'&&a[2]=='2')return 2;
-     
-     if(a[3]=='X'&&a[6]=='X'&&a[9]=='9')return 9;
-     if(a[3]=='X'&&a[9]=='X'&&a[6]=='6')return 6;
-     if(a[6]=='X'&&a[9]=='X'&&a[3]=='3')return 3;
-     
-     //Checks for 2 diagonal spots held by player and chooses remaining
-     if(a[1]=='X'&&a[5]=='X'&&a[9]=='9')return 9;
-     if(a[1]=='X'&&a[9]=='X'&&a[5]=='5')return 5;
-     if(a[5]=='X'&&a[9]=='X'&&a[1]=='1')return 1;
-     
-     if(a[3]=='X'&&a[5]=='X'&&a[7]=='7')return 7;
-     if(a[3]=='X'&&a[7]=='X'&&a[5]=='5')return 5;
-     if(a[5]=='X'&&a[7]=='X'&&a[3]=='3')return 3;
-     
-     //if none of the above, select random available
-     int aisp=rand()%9+1;
-     return aisp;
+    //Checks for 2 horizontal and chooses remaining to win
+    if(a[1]=='O'&&a[2]=='O'&&a[3]=='3')return 3;
+    if(a[1]=='O'&&a[3]=='O'&&a[2]=='2')return 2;
+    if(a[2]=='O'&&a[3]=='O'&&a[1]=='1')return 1;
+
+    if(a[4]=='O'&&a[5]=='O'&&a[6]=='6')return 6;
+    if(a[4]=='O'&&a[6]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[6]=='O'&&a[4]=='4')return 4;
+
+    if(a[7]=='O'&&a[8]=='O'&&a[9]=='9')return 9;
+    if(a[7]=='O'&&a[9]=='O'&&a[8]=='8')return 8;
+    if(a[8]=='O'&&a[9]=='O'&&a[7]=='7')return 7;
+
+    //Checks for 2 vertical and chooses remaining to win
+    if(a[1]=='O'&&a[4]=='O'&&a[7]=='7')return 7;
+    if(a[1]=='O'&&a[7]=='O'&&a[4]=='4')return 4;
+    if(a[4]=='O'&&a[7]=='O'&&a[1]=='1')return 1;
+
+    if(a[2]=='O'&&a[5]=='O'&&a[8]=='8')return 8;
+    if(a[2]=='O'&&a[8]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[8]=='O'&&a[2]=='2')return 2;
+
+    if(a[3]=='O'&&a[6]=='O'&&a[9]=='9')return 9;
+    if(a[3]=='O'&&a[9]=='O'&&a[6]=='6')return 6;
+    if(a[6]=='O'&&a[9]=='O'&&a[3]=='3')return 3;
+
+    //Checks for 2 diagonal and chooses remaining to win
+    if(a[1]=='O'&&a[5]=='O'&&a[9]=='9')return 9;
+    if(a[1]=='O'&&a[9]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[9]=='O'&&a[1]=='1')return 1;
+
+    if(a[3]=='O'&&a[5]=='O'&&a[7]=='7')return 7;
+    if(a[3]=='O'&&a[7]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[7]=='O'&&a[3]=='3')return 3;
+
+    //Checks for 2 horizontal spots held by player and blocks
+    if(a[1]=='X'&&a[2]=='X'&&a[3]=='3')return 3;
+    if(a[1]=='X'&&a[3]=='X'&&a[2]=='2')return 2;
+    if(a[2]=='X'&&a[3]=='X'&&a[1]=='1')return 1;
+
+    if(a[4]=='X'&&a[5]=='X'&&a[6]=='6')return 6;
+    if(a[4]=='X'&&a[6]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[6]=='X'&&a[4]=='4')return 4;
+
+    if(a[7]=='X'&&a[8]=='X'&&a[9]=='9')return 9;
+    if(a[7]=='X'&&a[9]=='X'&&a[8]=='8')return 8;
+    if(a[8]=='X'&&a[9]=='X'&&a[7]=='7')return 7;
+
+    //Checks for 2 vertical spots held by player and blocks
+    if(a[1]=='X'&&a[4]=='X'&&a[7]=='7')return 7;
+    if(a[1]=='X'&&a[7]=='X'&&a[4]=='4')return 4;
+    if(a[4]=='X'&&a[7]=='X'&&a[1]=='1')return 1;
+
+    if(a[2]=='X'&&a[5]=='X'&&a[8]=='8')return 8;
+    if(a[2]=='X'&&a[8]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[8]=='X'&&a[2]=='2')return 2;
+
+    if(a[3]=='X'&&a[6]=='X'&&a[9]=='9')return 9;
+    if(a[3]=='X'&&a[9]=='X'&&a[6]=='6')return 6;
+    if(a[6]=='X'&&a[9]=='X'&&a[3]=='3')return 3;
+
+    //Checks for 2 diagonal spots held by player and blocks
+    if(a[1]=='X'&&a[5]=='X'&&a[9]=='9')return 9;
+    if(a[1]=='X'&&a[9]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[9]=='X'&&a[1]=='1')return 1;
+
+    if(a[3]=='X'&&a[5]=='X'&&a[7]=='7')return 7;
+    if(a[3]=='X'&&a[7]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[7]=='X'&&a[3]=='3')return 3;
+
+    //if none of the above, select random available
+    int aisp=rand()%9+1;
+    return aisp;
+}
+
+//Expert AI board selection
+int exprtAI(char a[]){
+    //if first turn is computer's turn, choose middle or corner
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        if(aisp==1||aisp==3||aisp==5||aisp==7||aisp==9)return aisp;
+    }
+    
+    //if player has first turn and chooses middle, computer chooses a corner
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='X'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        if(aisp==1||aisp==3||aisp==7||aisp==9)return aisp;
+    }
+    
+    //if player has first turn and chooses a corner, computer chooses mid
+    if(a[1]=='X'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        return 5;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='X'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        return 5;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='X'&&a[8]=='8'&&a[9]=='9'){
+        return 5;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='X'){
+        return 5;
+    }
+    
+    //if player has first turn and chooses a side, computer chooses
+    if(a[1]=='1'&&a[2]=='X'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        return aisp;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='X'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        return aisp;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='X'&&a[7]=='7'&&a[8]=='8'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        return aisp;
+    }
+    if(a[1]=='1'&&a[2]=='2'&&a[3]=='3'&&a[4]=='4'&&a[5]=='5'&&
+       a[6]=='6'&&a[7]=='7'&&a[8]=='X'&&a[9]=='9'){
+        int aisp=rand()%9+1;
+        return aisp;
+    }
+    
+    //Checks for 2 horizontal and chooses remaining to win
+    if(a[1]=='O'&&a[2]=='O'&&a[3]=='3')return 3;
+    if(a[1]=='O'&&a[3]=='O'&&a[2]=='2')return 2;
+    if(a[2]=='O'&&a[3]=='O'&&a[1]=='1')return 1;
+
+    if(a[4]=='O'&&a[5]=='O'&&a[6]=='6')return 6;
+    if(a[4]=='O'&&a[6]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[6]=='O'&&a[4]=='4')return 4;
+
+    if(a[7]=='O'&&a[8]=='O'&&a[9]=='9')return 9;
+    if(a[7]=='O'&&a[9]=='O'&&a[8]=='8')return 8;
+    if(a[8]=='O'&&a[9]=='O'&&a[7]=='7')return 7;
+
+    //Checks for 2 vertical and chooses remaining to win
+    if(a[1]=='O'&&a[4]=='O'&&a[7]=='7')return 7;
+    if(a[1]=='O'&&a[7]=='O'&&a[4]=='4')return 4;
+    if(a[4]=='O'&&a[7]=='O'&&a[1]=='1')return 1;
+
+    if(a[2]=='O'&&a[5]=='O'&&a[8]=='8')return 8;
+    if(a[2]=='O'&&a[8]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[8]=='O'&&a[2]=='2')return 2;
+
+    if(a[3]=='O'&&a[6]=='O'&&a[9]=='9')return 9;
+    if(a[3]=='O'&&a[9]=='O'&&a[6]=='6')return 6;
+    if(a[6]=='O'&&a[9]=='O'&&a[3]=='3')return 3;
+
+    //Checks for 2 diagonal and chooses remaining to win
+    if(a[1]=='O'&&a[5]=='O'&&a[9]=='9')return 9;
+    if(a[1]=='O'&&a[9]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[9]=='O'&&a[1]=='1')return 1;
+
+    if(a[3]=='O'&&a[5]=='O'&&a[7]=='7')return 7;
+    if(a[3]=='O'&&a[7]=='O'&&a[5]=='5')return 5;
+    if(a[5]=='O'&&a[7]=='O'&&a[3]=='3')return 3;
+
+    //Checks for 2 horizontal spots held by player and blocks
+    if(a[1]=='X'&&a[2]=='X'&&a[3]=='3')return 3;
+    if(a[1]=='X'&&a[3]=='X'&&a[2]=='2')return 2;
+    if(a[2]=='X'&&a[3]=='X'&&a[1]=='1')return 1;
+
+    if(a[4]=='X'&&a[5]=='X'&&a[6]=='6')return 6;
+    if(a[4]=='X'&&a[6]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[6]=='X'&&a[4]=='4')return 4;
+
+    if(a[7]=='X'&&a[8]=='X'&&a[9]=='9')return 9;
+    if(a[7]=='X'&&a[9]=='X'&&a[8]=='8')return 8;
+    if(a[8]=='X'&&a[9]=='X'&&a[7]=='7')return 7;
+
+    //Checks for 2 vertical spots held by player and blocks
+    if(a[1]=='X'&&a[4]=='X'&&a[7]=='7')return 7;
+    if(a[1]=='X'&&a[7]=='X'&&a[4]=='4')return 4;
+    if(a[4]=='X'&&a[7]=='X'&&a[1]=='1')return 1;
+
+    if(a[2]=='X'&&a[5]=='X'&&a[8]=='8')return 8;
+    if(a[2]=='X'&&a[8]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[8]=='X'&&a[2]=='2')return 2;
+
+    if(a[3]=='X'&&a[6]=='X'&&a[9]=='9')return 9;
+    if(a[3]=='X'&&a[9]=='X'&&a[6]=='6')return 6;
+    if(a[6]=='X'&&a[9]=='X'&&a[3]=='3')return 3;
+
+    //Checks for 2 diagonal spots held by player and blocks
+    if(a[1]=='X'&&a[5]=='X'&&a[9]=='9')return 9;
+    if(a[1]=='X'&&a[9]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[9]=='X'&&a[1]=='1')return 1;
+
+    if(a[3]=='X'&&a[5]=='X'&&a[7]=='7')return 7;
+    if(a[3]=='X'&&a[7]=='X'&&a[5]=='5')return 5;
+    if(a[5]=='X'&&a[7]=='X'&&a[3]=='3')return 3;
+    
+    //if above conditions are not met, random select available
+    int aisp=rand()%9+1;
+    return aisp;
 }
 
 //determine which player's turn it is
@@ -476,4 +559,54 @@ char plyrTrn(int &p){
          p=2;
          return 'O';
      }
+}
+
+void rslt(Player &p1,Player &p2,int s,int p,int &d){
+    //Show end results of game
+    if (s==1){
+       if(p%2==1){
+           cout<<p1.getName()<<" is the winner! Good job!"<<endl;
+           p1.incWins();
+           p2.incLosses();
+       }
+       if(p%2==0){
+           cout<<p2.getName()<<" is the winner! Good job!"<<endl;
+           p1.incLosses();
+           p2.incWins();
+       }
+    }
+    if (s==2){
+        cout<<"The game has ended in a draw!"<<endl;
+        d++;
+    }
+}
+
+void rcrdScr(Player &p1,Player &p2,int g,int d){
+    //outputs final overall stats and stores them in a file designated by the user
+    string rsltFl; //file name to store results to file
+
+    //get file name for output file
+    cout<<endl;
+    cout<<"Please specify a filename that you would like"<<endl
+        <<"to output the results to (ex:'results.txt'): ";
+    cin>>rsltFl;
+
+    //declare the outfile and open
+    ofstream outputFile;
+    outputFile.open(rsltFl.c_str());
+
+    //final results output to screen
+    cout<<endl<<"You can find the file "<<rsltFl<<" within"<<endl
+        <<"the program folder."<<endl<<endl;   
+    cout<<"Games Played = "<<(g-1)<<" Draws = "<<d<<endl;
+    cout<<p1.getName()<<"'s score: "<<endl<<p1.getWins()<<"W "<<p1.getLosses()<<"L"<<endl;
+    cout<<p2.getName()<<"'s score: "<<endl<<p2.getWins()<<"W "<<p2.getLosses()<<"L"<<endl;
+
+    //output results to file
+    outputFile<<"Games Played = "<<(g-1)<<" Draws = "<<d<<endl;
+    outputFile<<p1.getName()<<"'s score: "<<endl<<p1.getWins()<<"W "<<p1.getLosses()<<"L"<<endl;
+    outputFile<<p2.getName()<<"'s score: "<<endl<<p2.getWins()<<"W "<<p2.getLosses()<<"L"<<endl;
+
+    //close file
+    outputFile.close();
 }
